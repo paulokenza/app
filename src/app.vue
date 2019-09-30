@@ -113,6 +113,9 @@ export default {
   },
   created() {
     this.bodyClass();
+    if (this.$store.state.projects === null) {
+      this.$store.dispatch("getProjects");
+    }
   },
   methods: {
     bodyClass() {

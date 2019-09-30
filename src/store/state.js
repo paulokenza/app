@@ -5,6 +5,7 @@ export default {
   latency: [],
   currentUser: {},
   bookmarks: [],
+  projects: null,
   sidebars: {
     nav: false,
     info: false

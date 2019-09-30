@@ -1,4 +1,5 @@
 import api from "../api";
+import axios from "axios";
 import {
   LATENCY,
   SET_CURRENT_USER,
@@ -7,7 +8,8 @@ import {
   ADD_BOOKMARK,
   DELETE_BOOKMARK,
   LOADING_START,
-  LOADING_FINISHED
+  LOADING_FINISHED,
+  SET_PROJECTS
 } from "./mutation-types";
 
 export function latency({ commit }) {
@@ -104,4 +106,16 @@ export function loadingStart({ commit }, { id, desc }) {
 
 export function loadingFinished({ commit }, id) {
   commit(LOADING_FINISHED, id);
+}
+
+export async function getProjects({ commit }) {
+  const urls = Object.keys(window.__DirectusConfig__.api);
+  const projects = await Promise.all(urls.map(fetchProjectInfo));
+  commit(SET_PROJECTS, projects);
+
+  async function fetchProjectInfo(url) {
+    const response = await axios.get(url);
+    const { project_name, project_logo } = response.data.data.api;
+    return { project_name, project_logo };
+  }
 }
