@@ -11,6 +11,7 @@ import Items from "./routes/items.vue";
 import FileLibrary from "./routes/file-library.vue";
 import Item from "./routes/item.vue";
 import Login from "./routes/login.vue";
+import LoginNew from "./routes/login-new.vue";
 import TFAActivation from "./routes/2fa-activation.vue";
 import NotFound from "./routes/not-found.vue";
 import Interfaces from "./routes/settings/interfaces.vue";
@@ -214,6 +215,13 @@ const router = new Router({
       }
     },
     {
+      path: "/login-new",
+      component: LoginNew,
+      meta: {
+        publicRoute: true
+      }
+    },
+    {
       path: "/2fa-activation",
       component: TFAActivation,
       meta: {
@@ -277,7 +285,7 @@ router.beforeEach((to, from, next) => {
   return next();
 });
 
-router.afterEach((to, from) => {
+router.afterEach(to => {
   // Prevent tracking if not logged in
   if (store.state.hydrated && api.loggedIn === true) {
     const pathsToIgnore = ["/2fa-activation", "/logout", "/login"];
