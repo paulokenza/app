@@ -16,7 +16,7 @@ export function latency({ commit }) {
   const start = performance.now();
   const now = Date.now();
 
-  api
+  api.api
     .request("get", "/server/ping", {}, {}, true)
     .then(() => {
       const end = performance.now();
@@ -72,7 +72,7 @@ export function track({ commit, state }, { page }) {
   };
 
   commit(UPDATE_CURRENT_USER, data);
-  return api.request("PATCH", `/users/${currentUserID}/tracking/page`, {}, data);
+  return api.api.request("PATCH", `/users/${currentUserID}/tracking/page`, {}, data);
 }
 
 export function getBookmarks({ commit }) {

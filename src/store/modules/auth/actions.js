@@ -1,5 +1,6 @@
 import jwtPayload from "@rijk/jwt-payload";
 import { mapKeys } from "lodash";
+import hydrateStore from "../../../hydrate";
 import formatTitle from "@directus/format-title";
 import { i18n } from "../../../lang/";
 import api from "../../../api";
@@ -61,14 +62,15 @@ export function login({ commit }, credentials) {
     .login({
       ...credentials,
       url: newUrl,
-      project,
-      persist: true
+      project
     })
-    .then(info => {
+    .then(async info => {
       let payload = tokenPayload(info);
       if (payload.needs2FA === true) {
         throw { code: 113, message: "2FA enforced but not enabled by user", token: info.token };
       }
+
+      await hydrateStore();
 
       commit(LOGIN_SUCCESS, {
         ...info,
@@ -79,6 +81,7 @@ export function login({ commit }, credentials) {
       });
     })
     .catch(error => {
+      console.log(error);
       commit(LOGIN_FAILED, error);
       throw error;
     });
