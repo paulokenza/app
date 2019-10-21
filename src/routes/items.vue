@@ -30,6 +30,14 @@
       />
       <template slot="buttons">
         <v-header-button
+          v-if="this.$store.state.currentUser.admin"
+          :label="$t('settings')"
+          icon="settings"
+          icon-color="lighter_gray"
+          no-background
+          @click="editCollection()"
+        />
+        <v-header-button
           v-if="editButton && !activity"
           key="edit"
           icon="mode_edit"
@@ -323,12 +331,17 @@ export default {
         !_.isEmpty(this.preferences.filters) ||
         (!_.isNil(this.preferences.search_query) && this.preferences.search_query.length > 0);
 
+      /* total_count returns the total number of data in collection.So for mine and 
+         role only permissions it also returns the same.So to fix it removed
+         total_count from item_count and added result_count.
+         Issue Fix 2122
+      */
       return isFiltering
         ? this.$tc("item_count_filter", this.meta.result_count, {
             count: this.$n(this.meta.result_count)
           })
-        : this.$tc("item_count", this.meta.total_count, {
-            count: this.$n(this.meta.total_count)
+        : this.$tc("item_count", this.meta.result_count, {
+            count: this.$n(this.meta.result_count)
           });
     },
     filterableFieldNames() {
@@ -419,7 +432,7 @@ export default {
       this.selection.forEach(item => {
         const status = this.statusField ? item[this.statusField] : null;
         const permission = this.statusField ? this.permission.statuses[status] : this.permission;
-        const userID = item[this.userCreatedField];
+        const userID = item[this.userCreatedField] ? item[this.userCreatedField].id : null;
 
         if (permission.delete === "none") {
           return (enabled = false);
@@ -431,7 +444,7 @@ export default {
 
         if (permission.delete === "role") {
           const userRoles = this.$store.state.users[userID].roles;
-          const currentUserRoles = this.$store.state.currentUser.roles;
+          const currentUserRoles = _.map(this.$store.state.currentUser.roles, "id");
           let contains = false;
 
           userRoles.forEach(role => {
@@ -457,7 +470,7 @@ export default {
       this.selection.forEach(item => {
         const status = this.statusField ? item[this.statusField] : null;
         const permission = this.statusField ? this.permission.statuses[status] : this.permission;
-        const userID = item[this.userCreatedField];
+        const userID = item[this.userCreatedField] ? item[this.userCreatedField].id : null;
 
         if (permission.update === "none") {
           return (enabled = false);
@@ -469,7 +482,7 @@ export default {
 
         if (permission.update === "role") {
           const userRoles = this.$store.state.users[userID].roles;
-          const currentUserRoles = this.$store.state.currentUser.roles;
+          const currentUserRoles = _.map(this.$store.state.currentUser.roles, "id");
           let contains = false;
 
           userRoles.forEach(role => {
@@ -494,6 +507,10 @@ export default {
   },
   methods: {
     keyBy: _.keyBy,
+    editCollection() {
+      if (!this.$store.state.currentUser.admin) return;
+      this.$router.push(`/settings/collections/${this.collection}`);
+    },
     closeBookmark() {
       this.bookmarkModal = false;
     },
@@ -694,7 +711,8 @@ label.style-4 {
   padding-bottom: 5px;
 }
 
-.bookmark {
+.bookmark,
+.settings {
   margin-left: 5px;
   position: relative;
 
