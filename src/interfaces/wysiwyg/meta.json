@@ -112,6 +112,8 @@
           "bullist": "Bullet List",
           "numlist": "Numbered List",
           "hr": "Horizontal Rule",
+          "link": "Add Link",
+          "unlink": "Remove Link",
           "copy": "Copy",
           "cut": "Cut",
           "paste": "Paste",
