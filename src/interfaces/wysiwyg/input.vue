@@ -70,7 +70,7 @@ export default {
       this.$emit("input", newValue);
     },
     getStyleFormats() {
-      const styleFormats = [];
+      let styleFormats = [];
 
       if (this.options.headings.length > 0) {
         styleFormats.push({
@@ -110,6 +110,10 @@ export default {
             format: format
           }))
         });
+      }
+
+      if (this.options.custom_formats.length > 0) {
+        styleFormats = [...styleFormats, ...this.options.custom_formats];
       }
 
       return styleFormats;
