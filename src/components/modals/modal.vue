@@ -133,7 +133,7 @@ export default {
 .v-modal {
   display: table;
   position: fixed;
-  z-index: 500;
+  z-index: 1500;
   top: 0;
   left: 0;
   width: 100%;

@@ -11,6 +11,17 @@
       @onUndo="updateValue"
       @onRedo="updateValue"
     />
+    <v-item-select
+      v-if="selectExisting"
+      collection="directus_files"
+      :fields="['title', 'filename']"
+      :filters="[]"
+      single
+      :value="selectedFile"
+      @input="selectedFile = $event"
+      @done="selectCallback"
+      @cancel="() => {}"
+    />
   </div>
 </template>
 
@@ -24,6 +35,7 @@ import "tinymce/plugins/media/plugin";
 import "tinymce/plugins/table/plugin";
 import "tinymce/plugins/hr/plugin";
 import "tinymce/plugins/lists/plugin";
+import "tinymce/plugins/image/plugin";
 import "tinymce/plugins/link/plugin";
 import "tinymce/plugins/pagebreak/plugin";
 import "tinymce/plugins/code/plugin";
@@ -39,6 +51,13 @@ export default {
     Editor
   },
   mixins: [mixin],
+  data() {
+    return {
+      selectExisting: false,
+      selectedFile: null,
+      selectCallback: () => {}
+    };
+  },
   computed: {
     initOptions() {
       return {
@@ -46,7 +65,8 @@ export default {
         skin_url: false,
         content_css: false,
 
-        plugins: "media table hr lists link pagebreak code insertdatetime autoresize paste preview",
+        plugins:
+          "media table hr lists image link pagebreak code insertdatetime autoresize paste preview",
         branding: false,
         max_height: 1000,
         elementpath: false,
@@ -56,7 +76,8 @@ export default {
         readonly: this.readonly,
         extended_valid_elements: "audio[loop],source",
         toolbar: "styleselect " + this.options.toolbar.join(" "),
-        style_formats: this.getStyleFormats()
+        style_formats: this.getStyleFormats(),
+        file_picker_callback: this.selectFile
       };
     }
   },
@@ -117,6 +138,16 @@ export default {
       }
 
       return styleFormats;
+    },
+    selectFile(callback) {
+      this.selectExisting = true;
+      this.selectCallback = async () => {
+        const { data: file } = await this.$api.getItem("directus_files", this.selectedFile);
+        this.selectExisting = false;
+        // TODO: Make sure it returns the correct keys for non-image type files. See
+        // https://www.tiny.cloud/docs/configure/file-image-upload/#example for an example
+        callback(file.data.full_url, { alt: file.title });
+      };
     }
   }
 };
