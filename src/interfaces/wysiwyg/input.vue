@@ -16,6 +16,7 @@
 
 <script>
 import mixin from "@directus/extension-toolkit/mixins/interface";
+import meta from "./meta.json";
 
 import "tinymce/tinymce";
 import "tinymce/themes/silver";
@@ -24,8 +25,6 @@ import "tinymce/plugins/table/plugin";
 import "tinymce/plugins/hr/plugin";
 import "tinymce/plugins/lists/plugin";
 import "tinymce/plugins/link/plugin";
-import "tinymce/plugins/image/plugin";
-import "tinymce/plugins/print/plugin";
 import "tinymce/plugins/pagebreak/plugin";
 import "tinymce/plugins/code/plugin";
 import "tinymce/plugins/insertdatetime/plugin";
@@ -47,8 +46,7 @@ export default {
         skin_url: false,
         content_css: false,
 
-        plugins:
-          "media table hr lists link image print pagebreak code insertdatetime autoresize paste preview",
+        plugins: "media table hr lists link pagebreak code insertdatetime autoresize paste preview",
         branding: false,
         max_height: 1000,
         elementpath: false,
@@ -57,8 +55,8 @@ export default {
         convert_urls: false,
         readonly: this.readonly,
         extended_valid_elements: "audio[loop],source",
-        toolbar:
-          "styleselect bold italic underline table undo redo superscript bullist numlist link unlink image code media removeformat format-1 format-1-red format-1-yellow format-1-green format-2 format-3 details"
+        toolbar: "styleselect " + this.options.toolbar.join(" "),
+        style_formats: this.getStyleFormats()
       };
     }
   },
@@ -70,6 +68,51 @@ export default {
       const editor = this.$refs.editorElement.editor;
       const newValue = editor.getContent();
       this.$emit("input", newValue);
+    },
+    getStyleFormats() {
+      const styleFormats = [];
+
+      if (this.options.headings.length > 0) {
+        styleFormats.push({
+          title: "Headings",
+          items: this.options.headings.map(format => ({
+            title: meta.options.headings.options.choices[format],
+            format: format
+          }))
+        });
+      }
+
+      if (this.options.inline.length > 0) {
+        styleFormats.push({
+          title: "Inline",
+          items: this.options.inline.map(format => ({
+            title: meta.options.inline.options.choices[format],
+            format: format
+          }))
+        });
+      }
+
+      if (this.options.blocks.length > 0) {
+        styleFormats.push({
+          title: "Blocks",
+          items: this.options.blocks.map(format => ({
+            title: meta.options.blocks.options.choices[format],
+            format: format
+          }))
+        });
+      }
+
+      if (this.options.alignment.length > 0) {
+        styleFormats.push({
+          title: "Align",
+          items: this.options.alignment.map(format => ({
+            title: meta.options.alignment.options.choices[format],
+            format: format
+          }))
+        });
+      }
+
+      return styleFormats;
     }
   }
 };
