@@ -27,7 +27,6 @@
 
 <script>
 import mixin from "@directus/extension-toolkit/mixins/interface";
-import meta from "./meta.json";
 
 import "tinymce/tinymce";
 import "tinymce/themes/silver";
@@ -60,6 +59,13 @@ export default {
   },
   computed: {
     initOptions() {
+      const styleFormats = this.getStyleFormats();
+      let toolbarString = this.options.toolbar.join(" ");
+
+      if (styleFormats) {
+        toolbarString += " styleselect";
+      }
+
       return {
         skin: false,
         skin_url: false,
@@ -75,8 +81,8 @@ export default {
         convert_urls: false,
         readonly: this.readonly,
         extended_valid_elements: "audio[loop],source",
-        toolbar: "styleselect " + this.options.toolbar.join(" "),
-        style_formats: this.getStyleFormats(),
+        toolbar: toolbarString,
+        style_formats: styleFormats,
         file_picker_callback: this.selectFile
       };
     }
@@ -91,53 +97,11 @@ export default {
       this.$emit("input", newValue);
     },
     getStyleFormats() {
-      let styleFormats = [];
-
-      if (this.options.headings.length > 0) {
-        styleFormats.push({
-          title: "Headings",
-          items: this.options.headings.map(format => ({
-            title: meta.options.headings.options.choices[format],
-            format: format
-          }))
-        });
+      if (Array.isArray(this.options.custom_formats) && this.options.custom_formats.length > 0) {
+        return this.options.custom_formats;
       }
 
-      if (this.options.inline.length > 0) {
-        styleFormats.push({
-          title: "Inline",
-          items: this.options.inline.map(format => ({
-            title: meta.options.inline.options.choices[format],
-            format: format
-          }))
-        });
-      }
-
-      if (this.options.blocks.length > 0) {
-        styleFormats.push({
-          title: "Blocks",
-          items: this.options.blocks.map(format => ({
-            title: meta.options.blocks.options.choices[format],
-            format: format
-          }))
-        });
-      }
-
-      if (this.options.alignment.length > 0) {
-        styleFormats.push({
-          title: "Align",
-          items: this.options.alignment.map(format => ({
-            title: meta.options.alignment.options.choices[format],
-            format: format
-          }))
-        });
-      }
-
-      if (this.options.custom_formats.length > 0) {
-        styleFormats = [...styleFormats, ...this.options.custom_formats];
-      }
-
-      return styleFormats;
+      return null;
     },
     selectFile(callback) {
       this.selectExisting = true;
