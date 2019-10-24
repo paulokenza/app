@@ -70,6 +70,8 @@ export default {
         skin: false,
         skin_url: false,
         content_css: false,
+        content_style: this.contentStyle,
+        icons: "material",
 
         plugins:
           "media table hr lists image link pagebreak code insertdatetime autoresize paste preview",
@@ -85,6 +87,13 @@ export default {
         style_formats: styleFormats,
         file_picker_callback: this.selectFile
       };
+    },
+    contentStyle() {
+      return `
+        h1 {
+          font-size: 12px;
+        }
+      `;
     }
   },
   created() {
