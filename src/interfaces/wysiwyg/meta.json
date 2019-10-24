@@ -7,32 +7,27 @@
     "length": 65534
   },
   "options": {
-    "show_element_path": {
-      "name": "Show Element Path",
-      "comment": "Show the element path (e.g. 'div > p > b')",
-      "interface": "toggle",
-      "default": true
-    },
     "toolbar": {
       "name": "Toolbar Options",
-      "comment": "What options to show in the toolbar",
+      "comment": "Show, hide and reorder toolbar options",
       "interface": "checkboxes",
       "default": [
         "bold",
         "italic",
         "underline",
-        "table",
-        "image",
-        "media",
-        "undo",
-        "redo",
-        "superscript",
-        "bullist",
-        "numlist",
+        "removeformat",
         "link",
         "unlink",
-        "code",
-        "removeformat"
+        "bullist",
+        "numlist",
+        "blockquote",
+        "h1",
+        "h2",
+        "h3",
+        "image",
+        "media",
+        "hr",
+        "code"
       ],
       "options": {
         "choices": {
